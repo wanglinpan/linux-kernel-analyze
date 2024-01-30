@@ -1,65 +1,32 @@
 # IP协议源码分析
+one TCP/IP start:
 
-`IP协议` 是网络的最重要部分，而 `IP协议` 最重要的是 `IP地址`，`IP地址` 就好像我们的家庭住址一样，用于其他人方便找到我们的位置。
+(1.) ip6_session_core_in -->resolve_ip6_tuple-->resolve_ip6_tuple_fast
 
-有关 `IP协议` 的原理可以参考经典的书籍《TCP/IP协议详解》，而这篇文章主要介绍的是 Linux 内核怎么实现 `IP协议`。
+(2.)fw6_pre_route_handler-->iprope6_dnat_check-->iprope6_policy_group_dnat_check-->__iprope6_dnat_check-->get_new_addr6
 
-## IP协议简介
+(3.) iprope6_access_proxy_check-->iprope6_policy_group_check-->__iprope6_check-->iprope6_check_one_policy
 
+（4.）iprope6_fwd_check
+      iprope6_policy_tree_check
+      __iprope6_tree_check
+      iprope6_check_one_policy-->do6_fwd_check
 
-那么，互联网上的计算机之间是通过什么连接的的？答案就是 `路由器`。如下图：
+（5.）fw6_local_in_handler -->iprope6_in_check
+   iprope6_policy_group_check-->__iprope6_check -->do6_fwd_check (IPROPE_GRP_IN :0x100001)
+   iprope6_policy_group_check-->__iprope6_check-->do6_fwd_check (IPROPE_GRP_IMPLICIT_IN :0x10000E)
+   iprope6_policy_group_check-->__iprope6_check-->do6_fwd_check (IPROPE_GRP_ADMIN_IN :0x10000F)
 
-![ip-router](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/ip-router.png)
+## Kernel gum  --> user config
+all 
+linux-3.2.16/include/linux/iprope.h
 
-`IP地址` 由一个 32/128 位的整型数字表示，
+IPROPE_GRP_IN -->> config fireware local-in-policy
+IPROPE_GRP_IMPLICIT_IN-->iprope6_set_in_by_cmdbsvr set lots default value
 
-但是，32 位的整型数字对人类的记忆不太友好，所以，又将这个 32 位的整型数字分成 4 个 8 位的整型数字，然后用 `点` 将他们连接起来，如下图：
+IPROPE_GRP_ADMIN_IN -->iprope6_set_admin_access
 
-![ip-address](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/ip-address-1.png)
-
-所以，`IP地址` 表示的范围如下：
-
-```
-0.0.0.0 ~ 255.255.255.255
-```
-有了 `IP地址` 后，就可以为互联网上的每台计算机设置 `IP地址`，如下图：
-
-![ip-network](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/ip-network-2.png)
-
-这样，为每台计算机设置好 `IP地址` 后，不同计算机之间就可以通过 `IP地址` 来进行通讯。比如，计算机A想与计算机D通讯，那么就可以通过向 `IP地址` 为 `11.11.1.1` 的地址发送消息。
-
-通信过程如下：
-
-*   计算A把自己的 `IP地址（源IP地址）` 与计算机B的 `IP地址（目标IP地址）` 封装成数据包，然后发送到路由器A。
-*   路由器A接收到计算机A的数据包，发现目标 `IP地址` 不在同一个网段（也就是连接不同路由器的），就会从 `路由表` 中找到合适的下一跳 `路由器`，把数据包转发出去（也就是路由B）。
-*   路由器B接收到路由器A的数据后，从数据包中获取到目标 `IP地址` 为 `11.11.1.1`，知道此 `IP地址` 是计算机D的 `IP地址`，所以就把数据转发给计算机D。
-
-由于每个路由器都知道连着自己的所有计算机的 `IP地址`（称为路由表），所以路由器与路由器之间可以通过 `路由协议` 交换路由表的信息，这样就可以从路由表信息中查找到 `IP地址` 对应的下一跳路由器。
-
-`IP协议` 就介绍到这里了，更详细的原理可以参考其他资料。
-
-## IP头部
-
-由于向网络中的计算机发送数据时，必须指定对方的 `IP地址（目标IP地址）` 和本机的 `IP地址（源IP地址）`，所以需要在发送的数据包添加 `IP协议` 头部。`IP协议` 头部的格式如下图所示：
-
-![ip-header](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/ip-header.png)
-
-从上图可以看出，除了 `目标IP地址` 和 `源IP地址` 外，还有其他一些字段，这些字段都是为了实现 `IP协议` 而定义的。下面我们来介绍一下 `IP头部` 各个字段的作用：
-
-*   `版本`：占 4 个位。表示 `IP协议` 的版本，如果是 `IPv4` 的话，那么固定为 4。
-*   `头部长度`：占 4 个位。表示 `IP头部` 的长度，单位为字（即 4 个字节）。由于其最大值为 15，所以 `IP头部` 最长为 60 字节（15 * 4）。
-*   `服务类型`：占 8 个位。定义不同的服务类型，可以为 IP 数据包提供不同的服务。本文不涉及这个字段，所以不作详细介绍。
-*   `总长度`：占 16 个位。表示整个 IP 数据包的长度，包括数据与 `IP头部`，所以 IP 数据包的最大长度为 65535 字节。
-*   `ID`：占 16 个位。用于标识不同的 IP 数据包。该字段和 `Flags` 和 `分片偏移量` 字段配合使用，对较大的 IP 数据包进行分片操作，关于 IP 数据包分片功能后面会介绍。
-*   `标记（Flags）`：占 3 个位。该字段第一位不使用，第二位是 `DF（Don't Fragment）` 位，`DF` 位设为 1 时表明路由器不能对该数据包分段。第三位是 `MF（More Fragments）` 位，表示当前分片是否为 IP 数据包的最后一个分片，如果是最后一个分片，就设置为 0，否则设置为 1。
-*   `分片偏移量`：占 13 个位。表示当前分片位于 IP 数据包分片组中的位置，接收端靠此来组装还原 IP 数据包。 
-*   `生存期（TTL）`：占 8 个位。当 IP 数据包进行发送时，先会对该字段赋予某个特定的值。当 IP 数据包经过沿途每一个路由器时，每个沿途的路由器会将该 IP 数据包的 TTL 值减少 1。如果 TTL 减少至为 0 时，则该 IP 数据包会被丢弃。这个字段可以防止由于路由环路而导致 IP 数据包在网络中不停被转发。
-*   `上层协议`：占 8 个位。标识了上层所使用的协议，例如常用的 TCP，UDP 等。
-*   `校验和`：占 16 个位。用于对 IP 头部的正确性进行检测，但不包含数据部分。 因为每个路由器要改变 TTL 的值，所以路由器会为每个通过的 IP 数据包重新计算这个值。
-*   `源 IP 地址与目标 IP 地址`：这两个字段都占 32 个位。标识了这个 IP 数据包的 `源IP地址` 和 `目标IP地址`。
-*   `IP选项`：长度可变，最多包含 40 字节。选项字段很少被使用，所以本文不会介绍。
-
-`IP头部` 结构在内核中的定义如下：
+：
 
 ```c
 struct iphdr {
