@@ -6,7 +6,7 @@
 
 异步 IO 与同步 IO 的区别如 图1 所示：
 
-![](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/aio/aio.png)
+![](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/aio/aio.png)
 
 从上图可知，同步 IO 必须等待内核把 IO 操作处理完成后才返回。而异步 IO 不必等待 IO 操作完成，而是向内核发起一个 IO 操作就立刻返回，当内核完成 IO 操作后，会通过信号的方式通知应用程序。
 
@@ -20,7 +20,7 @@
 
 如 图2 所示：
 
-![](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/aio/linux-native-aio.png)
+![](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/aio/linux-native-aio.png)
 
 Linux 原生 AIO 处理流程：
 
@@ -165,7 +165,7 @@ struct kioctx {
 
 `kioctx` 结构如 图3 所示：
 
-![](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/aio/kioctx-struct.png)
+![](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/aio/kioctx-struct.png)
 
 如 图1 所示，`active_reqs` 成员保存的异步 IO 操作队列是以 `kiocb` 结构为单元的，而 `ring_info` 成员指向一个类型为 `aio_ring_info` 结构的环形缓冲区（Ring Buffer）。
 
@@ -214,7 +214,7 @@ struct aio_ring_info {
 
 这个环形缓冲区主要用于保存已经完成的异步 IO 操作的结果，异步 IO 操作的结果使用 `io_event` 结构表示。如 图4 所示：
 
-![](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/aio/ring-buffer.png)
+![](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/aio/ring-buffer.png)
 
 图2 中的 `head` 代表环形缓冲区的开始位置，而 `tail` 代表环形缓冲区的结束位置，如果 `tail` 大于 `head`，则表示有完成的异步 IO 操作结果可以获取。如果 `head` 等于 `tail`，则表示没有完成的异步 IO 操作。
 
@@ -394,7 +394,7 @@ int io_submit_one(struct kioctx *ctx, struct iocb __user *user_iocb,
 
 `io_submit_one` 函数的操作过程如 图5 所示：
 
-![](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/aio/io_submit_once.png)
+![](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/aio/io_submit_once.png)
 
 
 

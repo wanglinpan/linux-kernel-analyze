@@ -12,7 +12,7 @@
 
 Linux 内核处理进出网络协议栈的数据包分为5个不同的阶段，`Netfilter` 通过这5个阶段注入钩子函数（Hooks Function）来实现对数据包的过滤和修改。如下图的蓝色方框所示：
 
-![netfilter-hooks](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/netfilter-hooks.png)
+![netfilter-hooks](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/netfilter-hooks.png)
 
 这5个阶段分为：
 
@@ -76,7 +76,7 @@ typedef unsigned int nf_hookfn(unsigned int hooknum, struct sk_buff **skb,
 
 `LVS` 主要通过向 `Netfilter` 的3个阶段注册钩子函数来对数据包进行处理，如下图：
 
-![lvs-hooks](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/lvs-hooks.png)
+![lvs-hooks](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/lvs-hooks.png)
 
 *   在 `LOCAL_IN` 阶段注册了 `ip_vs_in()` 钩子函数。
 *   在 `FORWARD` 阶段注册了 `ip_vs_out()` 钩子函数。
@@ -134,7 +134,7 @@ static int __init ip_vs_init(void)
 
 各个角色之间的关系如下图所示：
 
-![lvs-roles](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/lvs-roles.png)
+![lvs-roles](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/lvs-roles.png)
 
 从上图可以看出，`ip_vs_service` 对象的 `destinations` 字段用于保存 `ip_vs_dest` 对象的列表，而 `scheduler` 字段指向了一个  `ip_vs_scheduler` 对象。
 
@@ -343,7 +343,7 @@ ip_vs_rr_schedule(struct ip_vs_service *svc, struct iphdr *iph)
 
 其原理可以通过以下图片说明：
 
-![](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/lvs-scheduler.png)
+![](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/lvs-scheduler.png)
 
 上图描述的原理还是比较简单，首先从 `sched_data` 处开始遍历，查找一个合适的 `ip_vs_dest` 对象，然后更新 `sched_data` 的位置。
 
@@ -355,7 +355,7 @@ ip_vs_rr_schedule(struct ip_vs_service *svc, struct iphdr *iph)
 
 `ip_vs_conn` 对象用于维护 `客户端` 与 `真实服务器` 之间的关系，为什么需要维护它们之间的关系？原因是 `TCP协议` 面向连接的协议，所以每次调度都必须选择相同的真实服务器，否则连接就会失效。
 
-![lvs-connection](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/lvs-connection.png)
+![lvs-connection](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/lvs-connection.png)
 
 如上图所示，刚开始时调度器选择了 `Real-Server(1)` 服务器进行处理客户端请求，但第二次调度时却选择了 `Real-Server(2)` 来处理客户端请求。
 
@@ -383,7 +383,7 @@ struct ip_vs_conn {
 
 `ip_vs_conn` 对象各个字段的作用都在注释中进行说明了，客户端与真实服务器的连接关系就是通过 `协议类型`、`客户端IP`、`客户端端口`、`虚拟IP` 和 `虚拟端口` 来进行关联的，也就是说根据这五元组能够确定一个 `ip_vs_conn` 对象。
 
-另外，在《[原理篇](https://github.com/liexusong/linux-source-code-analyze/blob/master/lvs-principle-and-source-analysis-part1.md)》我们说过，LVS 有3中运行模式：`NAT模式`、`DR模式` 和 `TUN模式`。而对于不同的运行模式，发送数据包的接口是不一样的，所以 `ip_vs_conn` 对象的 `packet_xmit` 字段会根据不同的运行模式来选择不同的发送数据包接口，绑定发送数据包接口是通过 `ip_vs_bind_xmit()` 函数完成，如下：
+另外，在《[原理篇](https://github.com/liexusong/linux-kernel-analyze/blob/master/lvs-principle-and-source-analysis-part1.md)》我们说过，LVS 有3中运行模式：`NAT模式`、`DR模式` 和 `TUN模式`。而对于不同的运行模式，发送数据包的接口是不一样的，所以 `ip_vs_conn` 对象的 `packet_xmit` 字段会根据不同的运行模式来选择不同的发送数据包接口，绑定发送数据包接口是通过 `ip_vs_bind_xmit()` 函数完成，如下：
 
 ```c
 static inline void ip_vs_bind_xmit(struct ip_vs_conn *cp)
@@ -405,7 +405,7 @@ static inline void ip_vs_bind_xmit(struct ip_vs_conn *cp)
 
 一个客户端请求到达 `LVS` 后，`Director服务器` 首先会查找客户端是否已经与真实服务器建立了连接关系，如果已经建立了连接，那么直接使用这个连接关系。否则，通过调度器对象选择一台合适的真实服务器，然后创建客户端与真实服务器的连接关系，并且保存到全局哈希表 `ip_vs_conn_tab` 中。流程图如下：
 
-![lvs-connection-process](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/lvs-connection-process.png)
+![lvs-connection-process](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/lvs-connection-process.png)
 
 上面对 `LVS` 各个角色都进行了介绍，下面开始讲解 `LVS` 对数据包的转发过程。
 

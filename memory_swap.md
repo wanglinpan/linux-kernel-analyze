@@ -12,7 +12,7 @@
 
 Linux内核也使用了类似的算法, 但相对要复杂一些. Linux内核维护着三个队列: 活跃队列, 非活跃脏队列和非活跃干净队列. 为什么Linux需要维护三个队列, 而不是使用一个队列呢? 这是因为Linux希望内存页交换过程慢慢进行, Linux内核有个内核线程 `kswapd` 会定时检查系统的空闲内存页是否紧缺, 如果系统的空闲内存页紧缺时时, 就会选择一些用户进程把其占用的内存页添加到活跃链表中并断开进程与此内存页的映射关系. 随着时间的推移, 如果内存页没有被访问, 那么就会被移动到非活跃脏链表. 非活跃脏链表中的内存页是需要被交换到磁盘的, 当系统中空闲内存页紧缺时就会从非活跃脏链表的尾部开始把内存页刷新到磁盘中, 然后移动到非活跃干净链表中, 非活跃干净链表中的内存页是可以立刻分配给进程使用的. 各个链表之间的移动如下图:
 
-![lru links](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/memory_lru.jpg)
+![lru links](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/memory_lru.jpg)
 
 如果在这个过程中, 内存页又被访问了, 那么Linux内核会把内存页移动到活跃链表中, 并且建立内存映射关系, 这样就不需要从磁盘中读取内存页的内容.
 
@@ -410,7 +410,7 @@ void lru_cache_add(struct page * page)
 
 最后我们通过一幅图来总结一下 `kswapd` 内核线程的流程:
 
-![kswapd](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/kswapd.png)
+![kswapd](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/kswapd.png)
 
 `swap_out()` 函数会把进程占用的内存页添加到活跃链表中, 而 `refill_inactive_scan()` 函数会把活跃链表的内存页移动到非活跃脏链表中, 最后 `page_launder()` 会把非活跃脏链表的内存页刷新到磁盘并且移动到非活跃干净链表中, 非活跃干净链表中的内存页是直接可以用来分配使用的. 
 

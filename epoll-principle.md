@@ -51,7 +51,7 @@ struct eventpoll {
 
 下图展示了 `eventpoll` 对象与被监听的文件关系：
 
-![epoll-eventpoll](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/epoll-eventpoll.jpg)
+![epoll-eventpoll](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/epoll-eventpoll.jpg)
 
 由于被监听的文件是通过 `epitem` 对象来管理的，所以上图中的节点都是以 `epitem` 对象的形式存在的。为什么要使用红黑树来管理被监听的文件呢？这是为了能够通过文件句柄快速查找到其对应的 `epitem` 对象。红黑树是一种平衡二叉树，如果对其不了解可以查阅相关的文档。
 
@@ -186,7 +186,7 @@ unsigned int tcp_poll(struct file *file, struct socket *sock, poll_table *wait)
     return mask;
 }
 ```
-每个 `socket` 对象都有个等待队列（`waitqueue`, 关于等待队列可以参考文章: [等待队列原理与实现](https://github.com/liexusong/linux-source-code-analyze/blob/master/waitqueue.md)），用于存放等待 socket 状态更改的进程。
+每个 `socket` 对象都有个等待队列（`waitqueue`, 关于等待队列可以参考文章: [等待队列原理与实现](https://github.com/liexusong/linux-kernel-analyze/blob/master/waitqueue.md)），用于存放等待 socket 状态更改的进程。
 
 从上述代码可以知道，`tcp_poll()` 调用了 `poll_wait()` 函数，而 `poll_wait()` 最终会调用 `ep_ptable_queue_proc()` 函数，`ep_ptable_queue_proc()` 函数实现如下：
 ```cpp
@@ -298,7 +298,7 @@ static int ep_poll(struct eventpoll *ep,
 
 最后，我们通过一张图来总结epoll的原理：
 
-![epoll-principle](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/epoll_principle.jpg)
+![epoll-principle](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/epoll_principle.jpg)
 
 下面通过文字来描述一下这个过程：
 1. 通过调用 `epoll_create()` 函数创建并初始化一个 `eventpoll` 对象。

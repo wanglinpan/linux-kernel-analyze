@@ -39,7 +39,7 @@ typedef struct zone_struct {
 `free_area` 是伙伴系统算法的核心, 可以看到 `free_area` 有10个元素, 每个元素都是一个类型为 `free_area_t` 的结构体, `free_area_t` 结构的 `free_list` 字段用于连接有相同页面个数的内存块. `map` 字段是一个位图, 用于记录伙伴内存块的使用情况.
 
 Linux内核使用 `free_area[i]` 管理 2<sup>i</sup> 个内存页面大小的内存块列表. 例如 `free_area[0]` 就是管理1个内存页面大小的内存块(2<sup>0</sup>等于1), 而 `free_area[1]` 则管理2个内存页面大小的内存块(2<sup>1</sup>等于2). 如下图所示:
-![](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/memory_free_list.png)
+![](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/memory_free_list.png)
 
 上一节我们说过, 在管理物理内存页的 `struct page` 结构中有个 `list` 的字段, 内核就是通过这个字段把有着相同个数页面的内存块连成一个链表的:
 ```cpp
@@ -49,7 +49,7 @@ typedef struct page {
 } mem_map_t;
 ```
 前面我们说过, 在 `free_area_t` 结构中有个名为 `map` 的字段, `map` 字段是一个位图, 每个位记录着一对伙伴内存块的使用情况. 举个例子, 如果一对伙伴内存块中的某一个内存块在使用, 那么对应的位就为1, 如果两个伙伴内存块都是空闲或者使用, 那么对应的位就为0. 如下图:
-![](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/memory_free_area.jpg)
+![](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/memory_free_area.jpg)
 
 使用位图来标识伙伴内存块使用情况的原因是: 当释放内存块时, 如果对应的位是1的话, 那么说明另外一个伙伴内存块是空闲状态的, 所以释放当前内存块可以跟其伙伴内存块合并成一个更大的内存块了.
 

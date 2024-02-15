@@ -6,7 +6,7 @@ Linux 进程调度算法经历了以下几个版本的发展：
 *   O(1) 调度算法。(2.6.23之前的版本)
 *   完全公平调度算法。(2.6.23以及之后的版本)
 
-之前我写过一篇分析 `O(1)调度算法` 的文章：[O(1)调度算法](https://github.com/liexusong/linux-source-code-analyze/blob/master/process-schedule-o1.md)，而这篇主要分析 Linux 现在所使用的 `完全公平调度算法`。
+之前我写过一篇分析 `O(1)调度算法` 的文章：[O(1)调度算法](https://github.com/liexusong/linux-kernel-analyze/blob/master/process-schedule-o1.md)，而这篇主要分析 Linux 现在所使用的 `完全公平调度算法`。
 
 分析 `完全公平调度算法` 前，我们先了解下 `完全公平调度算法` 的基本原理。
 
@@ -14,7 +14,7 @@ Linux 进程调度算法经历了以下几个版本的发展：
 
 `完全公平调度算法` 体现在对待每个进程都是公平的，那么怎么才能做到完全公平呢？有一个比较简单的方法就是：让每个进程都运行一段相同的时间片，这就是 `基于时间片轮询调度算法`。如下图所示：
 
-![cpu-timeline](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/cpu-timeline.png)
+![cpu-timeline](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/cpu-timeline.png)
 
 如上图所示，开始时进程1获得 `time0 ~ time1` 的CPU运行时间。当进程1的时间片使用完后，进程2获得 `time1 ~ time2` 的CPU运行时间。而当进程2的时间片使用完后，进程3获得 `time2 ~ time3` 的CPU运行时间。
 
@@ -57,7 +57,7 @@ Linux 进程调度算法经历了以下几个版本的发展：
 
 如果不了解 `红黑树` 的话，可以把它看成一个自动排序的容器即可。如下图所示：
 
-![red-black-tree](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/red-black-tree.png)
+![red-black-tree](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/red-black-tree.png)
 
 如上图所示，`红黑树` 的左节点比父节点小，而右节点比父节点大。所以查找最小节点时，只需要获取 `红黑树` 的最左节点即可，时间复杂度为 `O(logN)`。
 
@@ -119,7 +119,7 @@ struct task_struct {
 
 所以，他们之间的关系如下图：
 
-![csf-runqueue](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/csf-runqueue.png)
+![csf-runqueue](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/csf-runqueue.png)
 
 从上图可以看出，所有 `sched_entity` 对象通过其 `run_node` 成员组成了一颗红黑树，这颗红黑树的根结点保存在 `cfs_rq` 对象的 `task_timeline` 成员中。
 

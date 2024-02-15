@@ -77,7 +77,7 @@ long sys_call_table[] = {
 
 原理如下图（图片来源 https://developer.ibm.com/zh/technologies/linux/tutorials/l-system-calls/ ）：
 
-![system_call](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/system_call.gif)
+![system_call](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/system_call.gif)
 
 ## 三、系统调用实现
 

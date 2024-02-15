@@ -101,7 +101,7 @@ struct pid_namespace {
 
 由于 `pid命名空间` 是分层的，也就是说新创建一个 `pid命名空间` 时会记录父级 `pid命名空间` 到 `parent` 字段中，所以随着 `pid命名空间` 的创建，在内核中会形成一颗 `pid命名空间` 的树，如下图（[图片来源](http://www.zhongruitech.com/256011226.html)）：
 
-![pid-namespace](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/pid-namespace-level.png)
+![pid-namespace](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/pid-namespace-level.png)
 
 第0层的 `pid命名空间` 是 `init` 进程所在的命名空间。如果一个进程所在的 `pid命名空间` 为 `N`，那么其在 `0 ~ N 层pid命名空间` 都有一个唯一的pid号。也就是说 `高层pid命名空间` 的进程对 `低层pid命名空间` 的进程是可见的，但是 `低层pid命名空间` 的进程对 `高层pid命名空间` 的进程是不可见的。
 
@@ -141,7 +141,7 @@ struct pid_link {
 ```
 这几个结构的关系如下图：
 
-![pid-namespace-structs](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/pid-namespace-structs.png)
+![pid-namespace-structs](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/pid-namespace-structs.png)
 
 我们主要关注 `struct pid` 这个结构，`struct pid` 有个类型为 `struct upid` 的成员 `numbers`，其定义为只有一个元素的数组，但是其实是一个动态的数据，它的元素个数与 `level` 的值一致，也就是说当 `level` 的值为5时，那么 `numbers` 成员就是一个拥有5个元素的数组。而每个元素记录了其在每层 `pid命名空间` 的pid号，而 `struct upid` 结构的 `nr` 成员就是用于记录进程在不同层级 `pid命名空间` 的pid号。
 

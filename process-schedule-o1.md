@@ -33,7 +33,7 @@ struct prio_array {
 
 下图更直观地展示了 `prio_array` 结构各个字段的关系：
 
-![prio_array](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/process-schedule-o1.jpg)
+![prio_array](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/process-schedule-o1.jpg)
 
 如上图所述，`bitmap` 的第2位和第6位为1（红色代表为1，白色代表为0），表示优先级为2和6的任务队列不为空，也就是说 `queue` 数组的第2个元素和第6个元素的队列不为空。
 
@@ -67,7 +67,7 @@ struct runqueue {
 
 如下图所示：
 
-![process-schedule-o1-move](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/process-schedule-o1-move.jpg)
+![process-schedule-o1-move](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/process-schedule-o1-move.jpg)
 
 `O(1)调度算法` 把140个优先级的前100个（0 ~ 99）作为 `实时进程优先级`，而后40个（100 ~ 139）作为 `普通进程优先级`。实时进程被放置到实时进程优先级的队列中，而普通进程放置到普通进程优先级的队列中。
 

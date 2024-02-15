@@ -49,7 +49,7 @@ struct iphdr {
 
 虽然 `IP头部` 看起来好像很复杂，但如果按每个字段所支持的功能来分析，就会豁然开朗。一个被添加上 `IP头部` 的数据包如下图所示：
 
-![ip-package](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/ip-package.png)
+![ip-package](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/ip-package.png)
 
 当然，除了 `IP头部` 外，在一个网络数据包中还可能包含一些其他协议的头部，比如 `TCP头部`，`以太网头部` 等，但由于这里只分析 `IP协议`，所以只标出了 `IP头部`。
 

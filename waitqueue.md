@@ -85,7 +85,7 @@ static inline void __add_wait_queue(wait_queue_head_t *head, wait_queue_t *new)
 
 `wait_queue_head_t` 结构与 `wait_queue_t` 结构之间的关系如下图：
 
-![waitqueue](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/waitqueue.jpg)
+![waitqueue](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/waitqueue.jpg)
 
 ### 休眠等待进程
 

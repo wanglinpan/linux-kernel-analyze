@@ -6,7 +6,7 @@
 
 前面说过，`8259A中断控制器` 由两片 8259A 风格的外部芯片以 `级联` 的方式连接在一起，每个芯片可处理多达 8 个不同的 IRQ（中断请求），所以可用 IRQ 线的个数达到 15 个。如下图：
 
-![8259A](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/8259A.png)
+![8259A](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/8259A.png)
 
 在内核中每条IRQ线由结构体 `irq_desc_t` 来描述，`irq_desc_t` 定义如下：
 ```c
@@ -45,7 +45,7 @@ struct irqaction {
 
 `irq_desc_t` 结构关系如下图：
 
-![irq_desc_t](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/irq_desc_t.jpg)
+![irq_desc_t](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/irq_desc_t.jpg)
 
 ### 注册中断处理入口
 在内核中，可以通过 `setup_irq()` 函数来注册一个中断处理入口。`setup_irq()` 函数代码如下：

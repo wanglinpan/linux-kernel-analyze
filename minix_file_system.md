@@ -22,7 +22,7 @@
 
 在分析MINIX文件系统实现前，我们先来了解一下MINIX文件系统在硬盘的结构组织，如下图：
 
-![minix_filesystem](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/minix_filesystem.png)
+![minix_filesystem](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/minix_filesystem.png)
 
 可以把硬盘当成一个由多个数据块组成的设备（对于MINIX文件系统一个数据块的大小为1024字节），MINIX文件系统就是组织和管理这些数据块的一种算法。下面来介绍一下上图中各个部分的作用：
 
@@ -70,7 +70,7 @@ struct minix2_inode {
 ```
 `minix2_inode` 的 `i_zone` 字段记录了文件数据存储在哪些逻辑数据块上，可以看到 `i_zone` 字段是一个有10个元素的数组，前7个元素是直接指向的数据块，就是数据会直接存储在这些数据块上。而第8个元素是一级间接指向，第9个元素是二级间接指向，第10个元素是三级间接指向，原理如下图：
 
-![minix_filesystem_inode](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/minix_filesystem_inode.jpg)
+![minix_filesystem_inode](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/minix_filesystem_inode.jpg)
 
 ### MINIX文件系统实现
 
@@ -149,7 +149,7 @@ static struct super_block *minix_read_super(
 #### 读取文件数据
 读取MINIX文件系统的文件过程如下图：
 
-![minix-filesystem-read](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/minix-filesystem-read.jpg)
+![minix-filesystem-read](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/minix-filesystem-read.jpg)
 
 读文件时，首先需要打开文件，然后通过调用 `read()` 系统调用来读取文件中的内容。`read()` 系统调用原型如下：
 ```cpp

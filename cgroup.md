@@ -51,7 +51,7 @@ $ echo task_pid > /sys/fs/cgroup/memory/test/tasks
 
 他们之间的关系如下图：
 
-![cgroup-base](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/cgroup-base.jpg)
+![cgroup-base](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/cgroup-base.jpg)
 
 我们可以把 `层级` 中的一个目录当成是一个 `CGroup`，那么目录里面的文件就是这个 `CGroup` 用于控制进程组使用各种资源的信息（比如 `tasks` 文件用于保存这个 `CGroup` 控制的进程组所有的进程PID，而 `memory.limit_in_bytes` 文件用于描述这个 `CGroup` 能够使用的内存字节数）。
 
@@ -63,18 +63,18 @@ $ echo task_pid > /sys/fs/cgroup/memory/test/tasks
 
 1. 一个 `层级` 可以附加多个 `子系统`，如下图：
 
-![cgroup-rule1](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/cgroup-rule1.jpeg)
+![cgroup-rule1](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/cgroup-rule1.jpeg)
 
 2. 一个已经被挂载的 `子系统` 只能被再次挂载在一个空的 `层级` 上，不能挂载到已经挂载了其他 `子系统` 的 `层级`，如下图：
 
-![cgroup-rule2](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/cgroup-rule2.jpeg)
+![cgroup-rule2](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/cgroup-rule2.jpeg)
 
 3. 每个 `任务` 只能在同一个 `层级` 的唯一一个 `CGroup` 里，并且可以在多个不同层级的 `CGroup` 中，如下图：
 
-![cgroup-rule3](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/cgroup-rule3.jpeg)
+![cgroup-rule3](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/cgroup-rule3.jpeg)
 
 4. 子进程在被 `fork` 出时自动继承父进程所在 `CGroup`，但是 `fork` 之后就可以按需调整到其他 `CGroup`，如下图：
 
-![cgroup-rule4](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/cgroup-rule4.jpeg)
+![cgroup-rule4](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/cgroup-rule4.jpeg)
 
 关于 `CGroup` 的介绍和使用就到这里，接下来我们来分析一下内核是怎么实现 `CGroup` 的。

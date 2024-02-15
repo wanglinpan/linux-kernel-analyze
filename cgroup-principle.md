@@ -33,7 +33,7 @@ struct cgroup {
 
 我们通过下面图片来描述 `层级` 中各个 `cgroup` 组成的树状关系：
 
-![cgroup-links](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/cgroup-links.jpg)
+![cgroup-links](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/cgroup-links.jpg)
 
 ### `cgroup_subsys_state` 结构体
 
@@ -66,7 +66,7 @@ struct mem_cgroup {
 
 从 `mem_cgroup` 结构的定义可以发现，`mem_cgroup` 结构的第一个字段就是一个 `cgroup_subsys_state` 结构。下面的图片展示了他们之间的关系：
 
-![cgroup-state-memory](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/cgroup-state-memory.jpg)
+![cgroup-state-memory](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/cgroup-state-memory.jpg)
 
 从上图可以看出，`mem_cgroup` 结构包含了 `cgroup_subsys_state` 结构，`内存子系统` 对外暴露出 `mem_cgroup` 结构的 `cgroup_subsys_state` 部分（即返回 `cgroup_subsys_state` 结构的指针），而其余部分由 `内存子系统` 自己维护和使用。
 
@@ -74,7 +74,7 @@ struct mem_cgroup {
 
 `cgroup` 结构与 `cgroup_subsys_state` 结构之间的关系如下图：
 
-![cgroup-subsys-state](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/cgroup-subsys-state.jpg)
+![cgroup-subsys-state](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/cgroup-subsys-state.jpg)
 
 ### `css_set` 结构体
 
@@ -111,7 +111,7 @@ struct task_struct {
 
 `task_struct` 结构与 `css_set` 结构的关系如下图：
 
-![cgroup-task-cssset](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/cgroup-task-cssset.jpg)
+![cgroup-task-cssset](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/cgroup-task-cssset.jpg)
 
 ### `cgroup_subsys` 结构
 

@@ -13,17 +13,17 @@
 
 由于在实模式下只能访问 `1MB` 的内存地址，这对于现代操作系统来说是远远不够的，所以 Intel 公司开发出支持 `保护模式` 的 CPU，在 `保护模式` 下，还是通过 `段寄存器:偏移量` 的模式进行内存访问，但 `段寄存器` 不再是内存地址的一部分，而是指向一个内存基地址的描述符：`段描述符（也叫段选择器）`，而偏移量也从原来的 16 位变为 32 位。如下图：
 
-![x86-segment](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/x86-segment.png)
+![x86-segment](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/x86-segment.png)
 
 运行在 `保护模式` 下的操作系统需要提供一个 `段描述符表` 的数组让CPU能够通过段寄存器找到对应的 `段描述符`，`段描述符表` 分为 `全局描述符表GDT` 和 `局部描述符表LDT`，如下图：
 
-![semget-selector-table](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/semget-selector-table.png)
+![semget-selector-table](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/semget-selector-table.png)
 
 为什么会有 `全局描述符表（GDT）` 和 `局部描述符表（LDT）` 这两种表？这是因为 Intel 当初希望操作系统开发者能够通过 `全局描述符表` 来访问内核的数据，而通过 `局部描述符表` 来访问进程的数据。但 Linux 基本不会用到 `局部描述符表`，所以我们基本可以忽略。
 
 `段描述符` 是一个占用64字节大小的数据结构，结构如下图：
 
-![semgent-selector](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/semgent-selector.png)
+![semgent-selector](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/semgent-selector.png)
 
 说实话，有了分页机制后，分段机制就变成了鸡肋了（保留只是为了兼容罢了，而且Linux也只是应付式的使用）。所以对于 `段描述符` 这个结构有兴趣的可以自己翻阅一些 `X86 CPU` 相关的书籍或文字了，这里就不作详细介绍了。
 

@@ -79,7 +79,7 @@ slab_t结构各个字段的用途如下：
 * `free`：用于连接空闲的对象
 
 用图来表示它们之间的关系，如下：
-![enter image description here](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/memory_slab_global.png)
+![enter image description here](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/memory_slab_global.png)
 
 ### SLAB分配算法初始化
 SLAB分配算法的初始化由 `kmem_cache_init()` 函数完成，如下：
@@ -311,7 +311,7 @@ void * kmem_cache_alloc (kmem_cache_t *cachep, int flags)
 * 如果 `slab_free` 列表中没有可用的slab，那么就调用 `kmem_cache_grow()` 函数申请新的slab来进行对象的分配。`kmem_cache_grow()` 函数会调用 `__get_free_pages()` 函数来申请内存页并且初始化slab.
 
 一个slab的结构如下图：
-![enter image description here](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/memory_slab.png)
+![enter image description here](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/memory_slab.png)
 
 灰色部分是着色区，绿色部分是slab管理结构，黄色部分是空闲对象链表的索引，红色部分是对象的实体。我们可以看到slab结构的s_mem字段指向了对象实体列表的起始地址。
 

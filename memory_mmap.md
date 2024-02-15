@@ -49,7 +49,7 @@ int main() {
 
 虚拟内存空间与物理内存空间映射关系如下：
 
-![process-vm-mapping](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/process_vm.jpg)
+![process-vm-mapping](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/process_vm.jpg)
 
 映射是按内存页进行的，一个内存页为 `4KB` 大小。在上图中，`P1` 是进程1，`P2` 是进程2。进程1的虚拟内存页A映射到物理内存页A，进程2的虚拟内存页A映射到物理内存页B。进程1的虚拟内存页B和进程2的虚拟内存页B同时映射到物理内存页C，也就是说进程1和进程2共享了物理内存页C。
 
@@ -94,7 +94,7 @@ struct vm_area_struct {
 
 `vm_area_struct` 结构与虚拟内存地址的关系如下图：
 
-![vm_address](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/vm_address.png)
+![vm_address](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/vm_address.png)
 
 每个进程都由 `task_struct` 结构进行管理，`task_struct` 结构中的 `mm` 成员指向了每个进程的内存管理结构 `mm_struct`，而 `mm_struct` 结构的 `mmap` 成员记录了进程虚拟内存空间各个内存区的 `vm_area_struct` 结构链表。
 
@@ -128,7 +128,7 @@ int generic_file_mmap(struct file * file, struct vm_area_struct * vma)
 
 处理过程如下图：
 
-![vma-pma-maping](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/vma-pma-maping.png)
+![vma-pma-maping](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/vma-pma-maping.png)
 
 如上图所示，`虚拟内存页m` 映射到 `物理内存页x`，并且把映射的文件的内容读入到物理内存中，这样就把内存与文件的映射关系建立起来，对映射的内存区进行读写操作实际上就是对文件的读写操作。
 
@@ -137,10 +137,10 @@ int generic_file_mmap(struct file * file, struct vm_area_struct * vma)
 #### 对文件的读写
 像 `read()/write()` 这些系统调用，首先需要进行内核空间，然后把文件内容读入到缓存中，然后再对缓存进行读写操作，最后由内核定时同步到文件中。过程如下图：
 
-![read-write-system-call](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/read-write-system-call.png)
+![read-write-system-call](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/read-write-system-call.png)
 
 而调用 `mmap()` 系统调用对文件进行映射后，用户对映射后的内存进行读写实际上是对文件缓存的读写，所以减少了一次系统调用，从而加速了对文件读写的效率。如下图：
 
-![mmap-memory-address](https://raw.githubusercontent.com/liexusong/linux-source-code-analyze/master/images/mmap-memory-address.png)
+![mmap-memory-address](https://raw.githubusercontent.com/liexusong/linux-kernel-analyze/master/images/mmap-memory-address.png)
 
 
