@@ -71,13 +71,6 @@
 * eBPF
     * [eBPF源码分析 - kprobe模块](https://github.com/wanglinpan/linux-kernel-analyze/blob/master/eBPF.md)
 
-### 3、Linux-5.x
-* 文件系统与I/O
-   * io_uring
-
-### 我们的公众号
-
-![qrcode](https://image-static.segmentfault.com/376/558/3765589661-607fef350658b_fix732)
 
 
 
