@@ -63,7 +63,7 @@ static inline struct task_struct * get_current(void)
 
 各种状态间的转换如下图:
 
-![](https://raw.githubusercontent.com/liexusong/myblog/master/images/task_state.png)
+![](https://github.com/wanglinpan/linux-kernel-analyze/blob/master/images/task_state.png)
 
 ### 进程的创建
 在Linux系统中，进程的创建使用fork()系统调用，fork()调用会创建一个与父进程一样的子进程，唯一不同就是fork()的返回值，父进程返回的是子进程的进程ID，而子进程返回的是0。
